@@ -1,63 +1,61 @@
-# AI-Powered Personal Debt Finance Advisor
+# 🤖 AI-Powered Personal Debt Finance Advisor
 
-> An intelligent Streamlit app that analyzes your debts, generates optimized repayment plans, and delivers personalized financial guidance through a conversational AI interface.
-
----
-
-## Overview
-
-FinanceBrew combines LLM-powered chat (Llama 3.3 70B via Groq) with deterministic financial algorithms to help users understand and eliminate debt faster. Users enter their debts and income, then get interactive repayment plans, what-if scenario modeling, document analysis, and AI-driven credit improvement advice — all in one app.
+An intelligent Streamlit app that analyzes your debts, generates optimized repayment plans, and delivers personalized financial guidance through a conversational AI interface.
 
 ---
 
-## Features
+## ✨ Features
 
-### Debt Repayment Engine
-- **Avalanche** — targets highest-APR debt first; minimizes total interest paid
-- **Snowball** — targets lowest-balance debt first; maximizes early motivation
-- **Mathematical Optimal** — linear programming to find the absolute fastest payoff path
-- Month-by-month payment schedules with principal vs. interest breakdowns
+### 💸 Debt Repayment Engine
+- **Three Strategies** — Avalanche (lowest total interest), Snowball (fastest motivation), and Mathematical Optimal (linear programming)
+- **Month-by-Month Schedules** — full repayment timelines with principal vs. interest breakdowns per debt
+- **Budget Validation** — checks that your budget covers all minimum payments before running plans
+- **Multi-Debt Support** — handles any number of debts simultaneously with configurable APR and minimum payments
 
-### AI Financial Advisor
-- Conversational chat backed by Groq's Llama 3.3 70B model
-- Slash commands for quick actions:
+### 🤖 AI Financial Advisor
+- Conversational chat backed by **Groq's Llama 3.3 70B** model via LangChain
+- Slash commands for quick structured actions:
   ```
   /plan strategy=avalanche budget=15000
   /whatif extra=3000
   /rag question="explain debt consolidation"
   ```
-- RAG-powered educational module retrieves relevant financial knowledge
-- Persistent chat history within a session
+- **RAG Knowledge Module** — vector store retrieval for financial education queries
+- Session-based chat history so context carries across turns
 
-### Scenario Modeling
-- What-if analysis for lump-sum windfalls, extra monthly payments, and strategy switches
-- Interactive charts comparing debt trajectories side-by-side
+### 🔮 Scenario Modeling
+- What-if analysis for extra monthly payments, lump-sum windfalls, and strategy switches
+- Interactive Matplotlib charts comparing debt trajectory across scenarios
+- Side-by-side interest and timeline comparisons
 
-### Document Intelligence
-- Upload PDFs, CSVs, Excel, or TXT bank statements for automated analysis
+### 📄 Document Intelligence
+- Upload PDFs, CSVs, Excel, or TXT bank statements for automated parsing
 - Extracts balances, rates, and transaction summaries without manual entry
+- Powered by `core/docsum.py` with multi-format support
 
-### Credit Optimization
+### ⭐ Credit Optimization
 - Personalized credit utilization recommendations
-- Score improvement timelines based on current debt profile
+- Score improvement timelines based on your current debt profile
+- Actionable steps ranked by estimated impact
 
 ---
 
-## Tech Stack
+### ⚙️ Feature Engineering (Debt Scoring Inputs)
 
-| Layer | Technology |
+| Feature | Description |
 |---|---|
-| Frontend | Streamlit |
-| AI / LLM | LangChain + Groq API (Llama 3.3 70B) |
-| Financial Algorithms | Python (NumPy, Pandas) |
-| Data Validation | Pydantic v2 |
-| Visualization | Matplotlib |
-| Knowledge Retrieval | Vector store (RAG) |
-| File Parsing | PyPDF2 / openpyxl / csv |
+| `apr` | Annual percentage rate normalized to decimal |
+| `balance` | Current outstanding balance |
+| `min_payment` | Required minimum monthly payment |
+| `interest_rate` | Display rate (percent); normalized from APR automatically |
+| `limit` | Optional credit card limit (for utilization scoring) |
+| `monthly_income` | User's gross monthly income |
+| `monthly_expenses` | Fixed monthly expenses |
+| `extra_payment` | Available monthly surplus beyond minimums |
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
 financebrew/
@@ -65,7 +63,7 @@ financebrew/
 ├── static/
 │   └── index.html            # Static frontend assets
 ├── core/
-│   ├── schemas.py            # Pydantic data models (Debt, UserProfile, RepaymentPlan)
+│   ├── schemas.py            # Pydantic v2 models — Debt, UserProfile, RepaymentPlan
 │   ├── optimization.py       # Avalanche, snowball & optimal repayment algorithms
 │   ├── scenarios.py          # What-if scenario analysis engine
 │   ├── recommendations.py    # Personalized advice generator
@@ -84,7 +82,7 @@ financebrew/
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 - Python 3.8+
@@ -93,27 +91,19 @@ financebrew/
 ### Installation
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/yourusername/financebrew.git
 cd financebrew
 
-# 2. Install dependencies
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env and add your Groq API key
 ```
 
-### Environment Variables
-
-```env
-GROQ_API_KEY=your_groq_api_key_here
-LLM_MODEL=llama-3.3-70b-versatile
-DEBUG_MODE=false
-```
-
-### Run the App
+### Running the App
 
 ```bash
 streamlit run app3.py
@@ -123,18 +113,77 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
 
-## Usage
+## 🔌 API / Command Reference
 
-1. **Set up your profile** — enter monthly income, expenses, and available debt budget
-2. **Add your debts** — use the interactive editor or import a CSV (name, balance, APR, minimum payment)
-3. **Generate a plan** — choose avalanche, snowball, or optimal and view your full payoff schedule
-4. **Chat with the advisor** — ask questions in plain English or use slash commands
-5. **Upload documents** — drop in a bank statement or credit card PDF for automated parsing
-6. **Run scenarios** — see what happens if you put an extra ₹5,000/month toward debt
+### `/plan` — Generate Repayment Plan
+Runs the selected strategy against your current debt profile.
+
+```
+/plan strategy=avalanche budget=15000
+/plan strategy=snowball budget=12000
+/plan strategy=optimal budget=20000
+```
+
+**Response:** Full month-by-month schedule with total interest paid and months to debt-free.
 
 ---
 
-## Running Tests
+### `/whatif` — Scenario Analysis
+Models the impact of additional payments or windfalls.
+
+```
+/whatif extra=3000
+/whatif lumpsum=50000
+```
+
+**Response:** Updated payoff timeline and interest savings vs. baseline plan.
+
+---
+
+### `/rag` — Educational Query
+Retrieves and explains financial concepts from the knowledge base.
+
+```
+/rag question="explain debt consolidation benefits"
+/rag question="what is credit utilization"
+```
+
+**Response:** AI-generated explanation grounded in the vector knowledge store.
+
+---
+
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Streamlit |
+| AI / LLM | LangChain + Groq API (Llama 3.3 70B) |
+| Financial Algorithms | Python — NumPy, Pandas |
+| Data Validation | Pydantic v2 |
+| Visualization | Matplotlib |
+| Knowledge Retrieval | Vector store (RAG) |
+| File Parsing | PyPDF2 / openpyxl / csv |
+
+---
+
+## 📦 Key Dependencies
+
+```
+streamlit
+langchain
+groq
+pydantic>=2.0
+pandas
+numpy
+matplotlib
+pypdf2
+openpyxl
+python-dotenv
+```
+
+---
+
+## 🧪 Testing
 
 ```bash
 # Full test suite
@@ -146,7 +195,7 @@ python -m pytest tests/test_optimization.py -v
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 | Variable | Description | Default |
 |---|---|---|
@@ -154,20 +203,34 @@ python -m pytest tests/test_optimization.py -v
 | `LLM_MODEL` | Language model to use | `llama-3.3-70b-versatile` |
 | `DEBUG_MODE` | Enable verbose debug output | `false` |
 
-To customize AI behavior, edit `core/prompts.py`. To add educational content, place text files in `data/financial_kb/`.
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+LLM_MODEL=llama-3.3-70b-versatile
+DEBUG_MODE=false
+```
+
+To customize AI responses, edit `core/prompts.py`. To expand the educational knowledge base, add text files to `data/financial_kb/`.
 
 ---
 
-## Privacy & Security
+## ⚠️ Notes
 
-- All financial calculations run **locally** — no balance or income data is sent to external servers
-- Only the chat messages you type are sent to the Groq API
-- No permanent storage of personal financial data; everything is session-based
-- API keys are loaded from environment variables, never hardcoded
+- **Local calculations** — all debt math runs entirely on your machine; no financial data is sent to external servers
+- **Groq API** — only your chat messages are transmitted; Groq's free tier is sufficient for normal usage
+- **Session-only storage** — no financial data persists between sessions
+- Add these to your `.gitignore`:
+  ```
+  venv/
+  __pycache__/
+  *.pyc
+  .env
+  ```
 
 ---
 
-## License
+## 📄 License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
